@@ -5,19 +5,21 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, FlexSendMessage, TextSendMessage
 load_dotenv()
-CHANNEL_TOKEN = os.getenv("CHANNEL_TOKEN")
+
 GEMINI_APIKEY = os.getenv("GEMINI_APIKEY")
-print("APIKEY = "+GEMINI_APIKEY +'\n')
+CHANNEL_TOKEN = os.getenv("CHANNEL_TOKEN")
 CHANNEL_SECRET = os.getenv("CHANNEL_SECRET")
 NOTIFY_TOKEN = os.getenv("NOTIFY_TOKEN")
+# your line user id 
 OWNER_ID = os.getenv("OWNER_USER_ID")
+
 users = []
-# print(CHANNEL_SECRET)
+
 line_bot_api = LineBotApi(CHANNEL_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
 app = Flask(__name__)
 
-# lineBotHeaders = {'Authorization':'Bearer '+'1Aeb/ToxCw9imZTLMiNi6THGx7agOIm8txJtVUAB1AkubVBnf/e6eJZGMEb945o+24oAPe5uEOBpgWgcxm/Mc8To8un/6CplgwT8zMvxY9NWfmJwyFlr1QBtwUAX82kKBeJ7psXTaUEWMZqAJrORkgdB04t89/1O/w1cDnyilFU=','Content-Type':'application/json'}
+# lineBotHeaders = {'Authorization':'Bearer '+'xxx','Content-Type':'application/json'}
 # body = {
 #     'to':'U2deac20d8bac62a51ea352713a23f2c9',
 #     'messages':[{
