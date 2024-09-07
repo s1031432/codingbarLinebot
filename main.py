@@ -6,6 +6,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, FlexSendMessage, TextSendMessage
 load_dotenv()
 
+
 GEMINI_APIKEY = os.getenv("GEMINI_APIKEY")
 CHANNEL_TOKEN = os.getenv("CHANNEL_TOKEN")
 CHANNEL_SECRET = os.getenv("CHANNEL_SECRET")
@@ -53,24 +54,19 @@ def handle_message(event):
     userInfoUrl = "https://api.line.me/v2/bot/profile/{}".format(user_id)
     userInfo = requests.get(userInfoUrl, headers={'Authorization': "Bearer {}".format(CHANNEL_TOKEN)})
     user = json.loads(userInfo.text)
-    userMessage = {"contents":[{"parts":[{"text":event.message.text}]}]}
+    userMessage = event.message.text
     if user not in users:
         users.append(user)
-    print('\n')
-    print(users)
-    print('\n')
-
-    sheet = request.get("https://script.googleusercontent.com/macros/echo?user_content_key=rqPndUVhd38C7NYrTGSWkrHJHmqlHqvMzw4ykqFbXe0n8_JknsPkgMtaADDt_zIlC0oVvyN7rKFsF6ovO6WfoXUBidyDb6XSm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnIjPZisaX2BfNzNNLsqxsnUpC7CSOvbeUgZnjoDWxU5SOl1_vDyXAo3VzLzEroDBco_w9Ui9Rzkl7AzTBGlqjPzEXljg3qoMDtz9Jw9Md8uu&lib=Mno5sysvZIr8bBGdDuwaVKvuOSBgwDLJL")
-    questions = json.loads(sheet.text)
-
-
+    
+    # show user list who talked to linebot
     if user["userId"] == OWNER_ID and userMessage == "Send Text":
         userIdStr = ""
         for user in users :
             for i in range(-4,0):
                 userIdStr+= user["userId"][i]
             userIdStr += (' '+ user["displayName"]+'\n')
-        replyMesssage = userIdStr
+        replyMessage = userIdStr
+    # if user text starts with userId, send customized message
     elif user["userId"] == OWNER_ID and userMessage[0:4].isalnum():
         ownerMessage = userMessage[5:-1]
         for user in users:
@@ -78,16 +74,15 @@ def handle_message(event):
                 receiveUser = user["userId"]
                 break
         line_bot_api.push_message(receiveUser, TextSendMessage(text=ownerMessage))
-        replyMessage = "done!"
-        
+        replyMessage = "done!" 
     else:
         response = SendTextztoGemini(userMessage)
         geminiResponseString = response["candidates"][0]["content"]["parts"][0]["text"]
         notifySendMessage("User Name: "+ user['displayName'] +'\n'+'UserId: '+user['userId']+'\n'\
                         +"Gemini Reply:" + response["candidates"][0]["content"]["parts"][0]["text"]
                       )
-        replyMesssage = geminiResponseString
-    text_message = TextSendMessage(replyMesssage)
+        replyMessage = geminiResponseString
+    text_message = TextSendMessage(replyMessage)
     line_bot_api.reply_message(event.reply_token, text_message)
     # requests.get(gasNotifyUrl+"?msg="+user["displayName"]+"："+event.message.text, headers={"Authorization": 'Bearer X5TEgso9iQq5lptU259mb3TD8xidwRSSfc3hSQwiJwv'})
     ### fetch data
@@ -108,6 +103,7 @@ def notifySendMessage(message):
     req = requests.request('POST', 'https://notify-api.line.me/api/notify',headers=notifyHeaders, data=notifyBody)
 
 def SendTextztoGemini(message):
+    message = {"contents":[{"parts":[{"text":message}]}]}
     # 將要傳給Gemini的訊息，依照Gemini的API格式包好
     gemini_data = json.dumps(message)
     # result是Gemini給我們的回應，是一個Object
