@@ -10,7 +10,6 @@ GEMINI_APIKEY = os.getenv("GEMINI_APIKEY")
 CHANNEL_TOKEN = os.getenv("CHANNEL_TOKEN")
 CHANNEL_SECRET = os.getenv("CHANNEL_SECRET")
 NOTIFY_TOKEN = os.getenv("NOTIFY_TOKEN")
-# your line user id 
 OWNER_ID = os.getenv("OWNER_USER_ID")
 
 users = []
@@ -61,6 +60,10 @@ def handle_message(event):
     print(users)
     print('\n')
 
+    sheet = request.get("https://script.googleusercontent.com/macros/echo?user_content_key=rqPndUVhd38C7NYrTGSWkrHJHmqlHqvMzw4ykqFbXe0n8_JknsPkgMtaADDt_zIlC0oVvyN7rKFsF6ovO6WfoXUBidyDb6XSm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnIjPZisaX2BfNzNNLsqxsnUpC7CSOvbeUgZnjoDWxU5SOl1_vDyXAo3VzLzEroDBco_w9Ui9Rzkl7AzTBGlqjPzEXljg3qoMDtz9Jw9Md8uu&lib=Mno5sysvZIr8bBGdDuwaVKvuOSBgwDLJL")
+    questions = json.loads(sheet.text)
+
+
     if user["userId"] == OWNER_ID and userMessage == "Send Text":
         userIdStr = ""
         for user in users :
@@ -68,6 +71,14 @@ def handle_message(event):
                 userIdStr+= user["userId"][i]
             userIdStr += (' '+ user["displayName"]+'\n')
         replyMesssage = userIdStr
+    elif user["userId"] == OWNER_ID and userMessage[0:4].isalnum():
+        ownerMessage = userMessage[5:-1]
+        for user in users:
+            if user["userId"][29:33] == userMessage[0:4]:
+                receiveUser = user["userId"]
+                break
+        line_bot_api.push_message(receiveUser, TextSendMessage(text=ownerMessage))
+        replyMessage = "done!"
         
     else:
         response = SendTextztoGemini(userMessage)
