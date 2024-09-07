@@ -6,6 +6,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, FlexSendMessage, TextSendMessage
 load_dotenv()
 
+
 GEMINI_APIKEY = os.getenv("GEMINI_APIKEY")
 CHANNEL_TOKEN = os.getenv("CHANNEL_TOKEN")
 CHANNEL_SECRET = os.getenv("CHANNEL_SECRET")
