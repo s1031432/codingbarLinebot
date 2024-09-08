@@ -1,0 +1,33 @@
+{
+    "type": "bubble",
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "text",
+          "text": "User List",
+          "weight": "bold",
+          "size": "xl",
+          "align": "center"
+        },
+        {
+          "type": "box",
+          "layout": "baseline",
+          "margin": "md",
+          "contents": []
+        },
+        {
+          "type": "separator"
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "sm",
+      "contents": [
+      ],
+      "flex": 0
+    }
+  }
