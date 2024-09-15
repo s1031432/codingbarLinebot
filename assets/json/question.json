@@ -1,0 +1,154 @@
+{
+    "type": "bubble",
+    "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+            {
+                "type": "text",
+                "text": "這個會考",
+                "weight": "bold",
+                "color": "#1DB446",
+                "size": "sm"
+            },
+            {
+                "type": "text",
+                "text": "$question",
+                "weight": "bold",
+                "size": "xl",
+                "margin": "md",
+                "wrap": true
+            },
+            {
+                "type": "text",
+                "text": "$optionA",
+                "wrap": true,
+                "size": "md",
+                "margin": "md"
+            },
+            {
+                "type": "text",
+                "text": "$optionB",
+                "wrap": true,
+                "size": "md",
+                "margin": "md"
+            },
+            {
+                "type": "text",
+                "text": "$optionC",
+                "wrap": true,
+                "size": "md",
+                "margin": "md"
+            },
+            {
+                "type": "text",
+                "text": "$optionD",
+                "wrap": true,
+                "size": "md",
+                "margin": "md"
+            },
+            {
+                "type": "text",
+                "text": "$reference",
+                "size": "xs",
+                "color": "#aaaaaa",
+                "wrap": true
+            },
+            {
+                "type": "separator",
+                "margin": "lg"
+            },
+            {
+                "type": "box",
+                "layout": "vertical",
+                "margin": "xxl",
+                "spacing": "sm",
+                "contents": [
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "button",
+                                "action": {
+                                    "type": "message",
+                                    "label": "Ａ",
+                                    "text": "A"
+                                },
+                                "height": "sm",
+                                "style": "primary"
+                            },
+                            {
+                                "type": "button",
+                                "action": {
+                                    "type": "message",
+                                    "label": "Ｂ",
+                                    "text": "B"
+                                },
+                                "margin": "none",
+                                "height": "sm",
+                                "style": "primary"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "button",
+                                "action": {
+                                    "type": "message",
+                                    "label": "Ｃ",
+                                    "text": "C"
+                                },
+                                "height": "sm",
+                                "style": "primary"
+                            },
+                            {
+                                "type": "button",
+                                "action": {
+                                    "type": "message",
+                                    "label": "Ｄ",
+                                    "text": "D"
+                                },
+                                "height": "sm",
+                                "style": "primary"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "separator",
+                "margin": "xxl"
+            },
+            {
+                "type": "box",
+                "layout": "horizontal",
+                "margin": "md",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "誰新增的",
+                        "size": "xs",
+                        "color": "#aaaaaa",
+                        "flex": 0
+                    },
+                    {
+                        "type": "text",
+                        "text": "$contributor",
+                        "color": "#aaaaaa",
+                        "size": "xs",
+                        "align": "end"
+                    }
+                ]
+            }
+        ]
+    },
+    "styles": {
+        "footer": {
+            "separator": true
+        }
+    }
+}
