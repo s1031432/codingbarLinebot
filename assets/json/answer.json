@@ -1,0 +1,82 @@
+{
+    "type": "bubble",
+    "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+            {
+                "type": "text",
+                "text": "這個會考",
+                "weight": "bold",
+                "color": "#1DB446",
+                "size": "sm"
+            },
+            {
+                "type": "text",
+                "text": "$question",
+                "weight": "bold",
+                "size": "xl",
+                "wrap": true
+            },
+            {
+                "type": "text",
+                "text": "$answer",
+                "wrap": true,
+                "size": "md"
+            },
+            {
+                "type": "text",
+                "text": "$reference",
+                "color": "#CCCCCC",
+                "size": "xs",
+                "align": "end"
+            }
+        ]
+    },
+    "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+            {
+                "type": "button",
+                "action": {
+                    "type": "message",
+                    "label": "點我再來一題！",
+                    "text": "exam"
+                },
+                "style": "primary"
+            },
+            {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "答對人次：$correct",
+                        "color": "#CCCCCC",
+                        "size": "xs"
+                    },
+                    {
+                        "type": "text",
+                        "text": "答錯人次：$incorrect",
+                        "color": "#CCCCCC",
+                        "size": "xs",
+                        "align": "end"
+                    }
+                ],
+                "margin": "md"
+            }
+        ]
+    },
+    "styles": {
+        "header": {
+            "separator": true
+        },
+        "hero": {
+            "separator": true
+        },
+        "footer": {
+            "separator": true
+        }
+    }
+}
