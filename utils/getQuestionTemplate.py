@@ -4,6 +4,7 @@ def getQuestionTemplate(question):
         data = json.load(file)
         data = json.dumps(data)
         data = data.replace("$question",question["question"] )
+        data = data.replace("$subject",question["subject"] )
         data = data.replace("$optionA","A. "+question["option_a"] )
         data = data.replace("$optionB","B. "+question["option_b"] )
         data = data.replace("$optionC","C. "+question["option_c"] )
