@@ -1,4 +1,5 @@
 import os, json, requests, random
+from utils.getUserMenu import getUserMenu
 from dotenv import load_dotenv
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
@@ -46,44 +47,58 @@ def callback():
         abort(400)
 
     return 'OK'
-
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    user_id = event.source.user_id
-    # get user info
-    userInfoUrl = "https://api.line.me/v2/bot/profile/{}".format(user_id)
+# get user info
+def getUserInfo(event):
+    user = {}
+    userInfoUrl = "https://api.line.me/v2/bot/profile/{}".format(event.source.user_id)
     userInfo = requests.get(userInfoUrl, headers={'Authorization': "Bearer {}".format(CHANNEL_TOKEN)})
     user = json.loads(userInfo.text)
-    userMessage = event.message.text
-    if user not in users:
-        users.append(user)
-    
+    user["id"] = event.source.user_id
+    user["message"] = event.message.text
+    user["step"] = "default"
+    user["distUserId"] = ""
+    return user
+users= {}
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    global users
+    userId = event.source.user_id
+    if userId not in users:
+        users[userId] = getUserInfo(event)
+    if step == "waitingMsg":
+        step = "default"
+        try:
+            line_bot_api.push_message(users[userId]["distUserId"], TextSendMessage(text=users[userId]["message"]))
+            replyMessage = TextSendMessage("傳送成功")
+        except Exception as error:
+            replyMessage = TextSendMessage("傳送失敗")
     # show user list who talked to linebot
-    if user["userId"] == OWNER_ID and userMessage == "Send Text":
-        userIdStr = ""
-        for user in users :
-            for i in range(-4,0):
-                userIdStr+= user["userId"][i]
-            userIdStr += (' '+ user["displayName"]+'\n')
-        replyMessage = userIdStr
-    # if user text starts with userId, send customized message
-    elif user["userId"] == OWNER_ID and userMessage[0:4].isalnum():
-        ownerMessage = userMessage[5:-1]
-        for user in users:
-            if user["userId"][29:33] == userMessage[0:4]:
-                receiveUser = user["userId"]
-                break
-        line_bot_api.push_message(receiveUser, TextSendMessage(text=ownerMessage))
-        replyMessage = "done!" 
     else:
-        response = SendTextztoGemini(userMessage)
-        geminiResponseString = response["candidates"][0]["content"]["parts"][0]["text"]
-        notifySendMessage("User Name: "+ user['displayName'] +'\n'+'UserId: '+user['userId']+'\n'\
-                        +"Gemini Reply:" + response["candidates"][0]["content"]["parts"][0]["text"]
-                      )
-        replyMessage = geminiResponseString
-    text_message = TextSendMessage(replyMessage)
-    line_bot_api.reply_message(event.reply_token, text_message)
+        if users[userId]["id"] == OWNER_ID and users[userId]["message"] == "Send Text":
+            userListFlexMsg = FlexSendMessage(
+                alt_text = "flex message",
+                contents = getUserMenu(users)
+            )
+            line_bot_api.reply_message(event.reply_token, userListFlexMsg)
+        # if user text starts with userId, send customized message
+        elif user["message"][0]=="U" and len(user["message"])==33:
+            users[userId]["distUserId"] = users[userId]["message"]
+            users[userId]["step"] = "waitingMsg"
+            userDisplayName = ""
+            for user in users:
+                if users[userId]["message"] == users[userId]["id"]:
+                    userDisplayName = users[userId]["displayName"]
+                    break
+            replyMessage = TextSendMessage("你想傳給{}什麼訊息呢?".format(userDisplayName))
+        else:
+            response = SendTextztoGemini(users[userId]["message"])
+            geminiResponseString = response["candidates"][0]["content"]["parts"][0]["text"]
+            notifySendMessage("User Name: "+ users[userId]['displayName'] +'\n'+'UserId: '+users[userId]["id"]+'\n'\
+                            +"Gemini Reply:" + response["candidates"][0]["content"]["parts"][0]["text"]
+                        )
+            replyMessage = TextSendMessage(geminiResponseString)
+    
+    line_bot_api.reply_message(event.reply_token, replyMessage)
     # requests.get(gasNotifyUrl+"?msg="+user["displayName"]+"："+event.message.text, headers={"Authorization": 'Bearer X5TEgso9iQq5lptU259mb3TD8xidwRSSfc3hSQwiJwv'})
     ### fetch data
     
