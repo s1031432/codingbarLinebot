@@ -1,5 +1,6 @@
 import os, json, requests, random
 from utils.getUserMenu import getUserMenu
+from utils.getQuestionTemplate import getQuestionTemplate
 from dotenv import load_dotenv
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
@@ -22,7 +23,7 @@ app = Flask(__name__)
 
 # lineBotHeaders = {'Authorization':'Bearer '+'xxx','Content-Type':'application/json'}
 # body = {
-#     'to':'U2deac20d8bac62a51ea352713a23f2c9',
+#     'to':'',
 #     'messages':[{
 #             'type': 'text',
 #             'text': 'Coco'
@@ -65,8 +66,8 @@ def handle_message(event):
     userId = event.source.user_id
     if userId not in users:
         users[userId] = getUserInfo(event)
-    if step == "waitingMsg":
-        step = "default"
+    if users[userId]["step"] == "waitingMsg":
+        users[userId]["step"] = "default"
         try:
             line_bot_api.push_message(users[userId]["distUserId"], TextSendMessage(text=users[userId]["message"]))
             replyMessage = TextSendMessage("傳送成功")
@@ -74,7 +75,15 @@ def handle_message(event):
             replyMessage = TextSendMessage("傳送失敗")
     # show user list who talked to linebot
     else:
-        if users[userId]["id"] == OWNER_ID and users[userId]["message"] == "Send Text":
+        if users[userId]["message"] == "exam":
+            result = requests.get("https://script.google.com/macros/s/AKfycbyevqGZo-c-_3oAtzjv5KNW4H6WHmhEzLvequDqwtJvfr-KH6_LQMjmMwvBTobdxN1A/exec?q=3")
+            result = json.loads(result.text)
+            questionFlexMsg = FlexSendMessage(
+                alt_text = "flex message",
+                contents = getQuestionTemplate(result[0])
+            )
+            line_bot_api.reply_message(event.reply_token, questionFlexMsg)
+        elif users[userId]["id"] == OWNER_ID and users[userId]["message"] == "Send Text":
             userListFlexMsg = FlexSendMessage(
                 alt_text = "flex message",
                 contents = getUserMenu(users)
@@ -98,7 +107,7 @@ def handle_message(event):
                         )
             replyMessage = TextSendMessage(geminiResponseString)
     
-    line_bot_api.reply_message(event.reply_token, replyMessage)
+    #line_bot_api.reply_message(event.reply_token, replyMessage)
     # requests.get(gasNotifyUrl+"?msg="+user["displayName"]+"："+event.message.text, headers={"Authorization": 'Bearer X5TEgso9iQq5lptU259mb3TD8xidwRSSfc3hSQwiJwv'})
     ### fetch data
     
