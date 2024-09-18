@@ -144,13 +144,6 @@
           "contents": [
             {
               "type": "text",
-              "text": "誰新增的",
-              "size": "xs",
-              "color": "#aaaaaa",
-              "flex": 0
-            },
-            {
-              "type": "text",
               "text": "$contributor",
               "color": "#aaaaaa",
               "size": "xs",
