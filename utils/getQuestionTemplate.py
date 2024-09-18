@@ -1,6 +1,5 @@
 import json
 def getQuestionTemplate(question):
-    print(question)
     with open('./assets/json/question.json', 'r', encoding="utf-8") as file:
         data = json.load(file)
         data = json.dumps(data)
@@ -12,5 +11,4 @@ def getQuestionTemplate(question):
         data = data.replace("$reference",question["reference"] )
         data = data.replace("$contributor",question["contributor"] )
         data = json.loads(data)
-    #print(data)
     return data

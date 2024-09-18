@@ -1,5 +1,4 @@
 import json
-
 def getUserMenu(userList):
     # Open and read the JSON file
     with open('./assets/json/userList.json', 'r') as file:
@@ -10,9 +9,4 @@ def getUserMenu(userList):
         button["action"]["label"] = user["displayName"]
         button["action"]["text"] = user["userId"]
         data["footer"]["contents"].append(button)
-
-    # Print the data
-    print(data)
     return data
-
-# getUserMenu([{"displayName":"tim","userId":"12345678"},{"displayName":"Jane","userId":"761829"},{"displayName":"Ketty","userId":"927391"}])
