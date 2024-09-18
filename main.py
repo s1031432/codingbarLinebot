@@ -41,7 +41,7 @@ def callback():
 
     # 獲取請求正文
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    # app.logger.info("Request body: " + body)
 
     # 處理 webhook 正文
     try:
@@ -88,7 +88,7 @@ def handle_message(event):
     else:
         if users[userId]["message"] == "exam":
             # get question from Google Sheet. 'q=3' means retrieving the question with the number 3.
-            result = requests.get(QUESTION_URL+"?q=3")
+            result = requests.get(QUESTION_URL)
             result = json.loads(result.text)
             questionFlexMsg = FlexSendMessage(
                 alt_text = "flex message",
