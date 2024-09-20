@@ -16,13 +16,15 @@
                 "text": "$question",
                 "weight": "bold",
                 "size": "xl",
+                "margin": "md",
                 "wrap": true
             },
             {
                 "type": "text",
                 "text": "$answer",
                 "wrap": true,
-                "size": "md"
+                "size": "md",
+                "margin": "md"
             },
             {
                 "type": "text",
@@ -69,12 +71,6 @@
         ]
     },
     "styles": {
-        "header": {
-            "separator": true
-        },
-        "hero": {
-            "separator": true
-        },
         "footer": {
             "separator": true
         }

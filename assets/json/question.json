@@ -75,8 +75,7 @@
         {
           "type": "box",
           "layout": "vertical",
-          "margin": "xxl",
-          "spacing": "sm",
+          "margin": "lg",
           "contents": [
             {
               "type": "box",
@@ -89,8 +88,8 @@
                     "label": "Ａ",
                     "text": "A"
                   },
-                  "height": "sm",
-                  "style": "primary"
+                  "style": "primary",
+                  "height": "sm"
                 },
                 {
                   "type": "button",
@@ -99,7 +98,6 @@
                     "label": "Ｂ",
                     "text": "B"
                   },
-                  "margin": "none",
                   "height": "sm",
                   "style": "primary"
                 }
@@ -131,25 +129,22 @@
                 }
               ]
             }
-          ]
-        },
+          ],
+          "spacing": "sm"
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "horizontal",
+      "margin": "md",
+      "contents": [
         {
-          "type": "separator",
-          "margin": "xxl"
-        },
-        {
-          "type": "box",
-          "layout": "horizontal",
-          "margin": "md",
-          "contents": [
-            {
-              "type": "text",
-              "text": "$contributor",
-              "color": "#aaaaaa",
-              "size": "xs",
-              "align": "end"
-            }
-          ]
+          "type": "text",
+          "text": "$contributor",
+          "color": "#aaaaaa",
+          "size": "xs",
+          "align": "end"
         }
       ]
     },
