@@ -8,7 +8,6 @@ def getAnswerTemplate(user):
             data = data.replace( "$answer", "答對了！答案是\\n {}. {}".format( user["exam"]["answer"], user["exam"]["option"] ) )
             user["exam"]["correct_count"] += 1
         else:
-            print("答錯了！答案是\n{}. {}".format( user["exam"]["answer"], user["exam"]["option"] ))
             data = data.replace( "$answer", "答錯了！答案是\\n{}. {}".format( user["exam"]["answer"], user["exam"]["option"] ) )
             user["exam"]["incorrect_count"] += 1
         data = data.replace( "$correct", str(user["exam"]["correct_count"]) )
