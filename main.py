@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, FlexSendMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, ImageSendMessage, FlexSendMessage, TextSendMessage
 
 load_dotenv()
 
@@ -73,10 +73,14 @@ users= {}
 def handle_message(event):
     global users
     userId = event.source.user_id
+
+    replyMsgQueue = []
+
     if userId not in users:
         users[userId] = getUserInfo(event)
     else:
         users[userId]["message"] = event.message.text
+
     if users[userId]["step"] == "waitingMsg":
         users[userId]["step"] = "default"
         try:
@@ -84,21 +88,32 @@ def handle_message(event):
             replyMessage = TextSendMessage("傳送成功")
         except Exception as error:
             replyMessage = TextSendMessage("傳送失敗")
+        replyMsgQueue.append(replyMessage)
     # show user list who talked to linebot
     else:
         if users[userId]["message"] == "exam":
             # get question from Google Sheet. 'q=3' means retrieving the question with the number 3.
             result = requests.get(QUESTION_URL)
+            print(result.text)
             result = json.loads(result.text)
+            if result[0]["imgsrc"] != "":
+                imageMsg = ImageSendMessage(
+                    original_content_url = result[0]["imgsrc"], 
+                    preview_image_url = result[0]["imgsrc"]
+                )
+                replyMsgQueue.append(imageMsg)
+
             questionFlexMsg = FlexSendMessage(
                 alt_text = "flex message",
                 contents = getQuestionTemplate(result[0])
             )
-            line_bot_api.reply_message(event.reply_token, questionFlexMsg)
+            replyMsgQueue.append(questionFlexMsg)
+            
             # set the user's status to 'exam'.
             users[userId]["step"] = "exam"
             # store exam infomation
             users[userId]["exam"]["id"] = result[0]["id"]
+            users[userId]["exam"]["subject"] = result[0]["subject"]
             users[userId]["exam"]["question"] = result[0]["question"]
             users[userId]["exam"]["answer"] = result[0]["answer"]
             users[userId]["exam"]["option"] = result[0]["option_"+result[0]["answer"].lower()]
@@ -113,26 +128,27 @@ def handle_message(event):
                     alt_text = "flex message",
                     contents = getAnswerTemplate(users[userId])
                 )
-                line_bot_api.reply_message(event.reply_token, answerFlexMsg)
+                replyMsgQueue.append(answerFlexMsg)
+
                 ## update correct or incorrect count
                 data = {
                     "id": users[userId]["exam"]["id"],
+                    "subject": users[userId]["exam"]["subject"],
                     "isCorrect": users[userId]["exam"]["answer"] == users[userId]["message"]
                 }
                 requests.post(QUESTION_URL, data=json.dumps(data), headers={'Content-Type': 'application/json'})
             else:
                 invalidMsg = TextSendMessage("回答格式錯誤，請點擊按鈕答題")
-                line_bot_api.reply_message(event.reply_token, invalidMsg)
-            
+                replyMsgQueue.append(invalidMsg)            
 
         elif users[userId]["id"] == OWNER_ID and users[userId]["message"] == "Send Text":
             userListFlexMsg = FlexSendMessage(
                 alt_text = "flex message",
                 contents = getUserMenu(users)
             )
-            line_bot_api.reply_message(event.reply_token, userListFlexMsg)
+            replyMsgQueue.append(userListFlexMsg)
         # if user text starts with userId, send customized message
-        elif users["message"][0]=="U" and len(user["message"])==33:
+        elif users[userId]["message"][0]=="U" and len(user[userId]["message"])==33:
             users[userId]["distUserId"] = users[userId]["message"]
             users[userId]["step"] = "waitingMsg"
             userDisplayName = ""
@@ -141,6 +157,7 @@ def handle_message(event):
                     userDisplayName = users[userId]["displayName"]
                     break
             replyMessage = TextSendMessage("你想傳給{}什麼訊息呢?".format(userDisplayName))
+            replyMsgQueue.append(replyMessage)
         else:
             response = SendTextztoGemini(users[userId]["message"])
             geminiResponseString = response["candidates"][0]["content"]["parts"][0]["text"]
@@ -148,8 +165,9 @@ def handle_message(event):
                             +"Gemini Reply:" + response["candidates"][0]["content"]["parts"][0]["text"]
                         )
             replyMessage = TextSendMessage(geminiResponseString)
+            replyMsgQueue.append(replyMessage)
     
-    # line_bot_api.reply_message(event.reply_token, replyMessage)
+    line_bot_api.reply_message(event.reply_token, replyMsgQueue)
     # requests.get(gasNotifyUrl+"?msg="+user["displayName"]+"："+event.message.text, headers={"Authorization": 'Bearer X5TEgso9iQq5lptU259mb3TD8xidwRSSfc3hSQwiJwv'})
     ### fetch data
     
